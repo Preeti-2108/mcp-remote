@@ -1,93 +1,177 @@
-# dps_mcp_local_gitlab
+# MCP GitLab On-Premise
 
+An MCP (Model Context Protocol) server that enables Claude to interact with your GitLab On-Premise instance. This server provides 18 tools for managing projects, issues, merge requests, and CI/CD pipelines directly from Claude.
 
+## Prerequisites
 
-## Getting started
-
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
-
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
-
-## Add your files
-
-- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-- [ ] [Add files using the command line](https://docs.gitlab.com/topics/git/add_files/#add-files-to-a-git-repository) or push an existing Git repository with the following command:
-
-```
-cd existing_repo
-git remote add origin https://innersource.soprasteria.com/i2s-ics-do/dps_mcp_local_gitlab.git
-git branch -M master
-git push -uf origin master
-```
-
-## Integrate with your tools
-
-- [ ] [Set up project integrations](https://innersource.soprasteria.com/i2s-ics-do/dps_mcp_local_gitlab/-/settings/integrations)
-
-## Collaborate with your team
-
-- [ ] [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
-- [ ] [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-- [ ] [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-- [ ] [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-- [ ] [Set auto-merge](https://docs.gitlab.com/user/project/merge_requests/auto_merge/)
-
-## Test and Deploy
-
-Use the built-in continuous integration in GitLab.
-
-- [ ] [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/)
-- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing (SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
-- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-- [ ] [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
-- [ ] [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
-
-***
-
-# Editing this README
-
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thanks to [makeareadme.com](https://www.makeareadme.com/) for this template.
-
-## Suggestions for a good README
-
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
-
-## Name
-Choose a self-explaining name for your project.
-
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
-
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
-
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
+- Python 3.10+
+- [uv](https://docs.astral.sh/uv/) package manager
+- A GitLab Personal Access Token
 
 ## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
 
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
+1. Clone the repository:
+   ```bash
+   git clone https://innersource.soprasteria.com/i2s-ics-do/dps_mcp_local_gitlab.git
+   cd dps_mcp_local_gitlab
+   ```
 
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
+2. Install dependencies:
+   ```bash
+   uv sync
+   ```
 
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
+## GitLab Token Setup
 
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
+Create a Personal Access Token on your GitLab instance:
 
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
+1. Go to `https://your-gitlab.com/-/user_settings/personal_access_tokens`
+2. Create a new token with the appropriate scopes:
 
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
+| Use Case | Required Scopes |
+|----------|-----------------|
+| Full access (read + write) | `api` |
+| Read-only access | `read_api` + `read_repository` |
 
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
+## Configuring Claude Code
 
-## License
-For open source projects, say how it is licensed.
+### Option 1: CLI Command (Recommended)
 
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+Add the MCP server to Claude Code using the command line:
+
+```bash
+claude mcp add gitlab \
+  --transport stdio \
+  --env GITLAB_URL=https://your-gitlab.com \
+  --env GITLAB_TOKEN=glpat-xxxxxxxxxxxx \
+  -- uv --directory /path/to/dps_mcp_local_gitlab run mcp-gitlab
+```
+
+Replace:
+- `https://your-gitlab.com` with your GitLab instance URL
+- `glpat-xxxxxxxxxxxx` with your Personal Access Token
+- `/path/to/dps_mcp_local_gitlab` with the absolute path to this repository
+
+### Option 2: Project Configuration File (.mcp.json)
+
+Create a `.mcp.json` file in your project root to share the configuration with your team:
+
+```json
+{
+  "mcpServers": {
+    "gitlab": {
+      "command": "uv",
+      "args": ["--directory", "/path/to/dps_mcp_local_gitlab", "run", "mcp-gitlab"],
+      "env": {
+        "GITLAB_URL": "${GITLAB_URL}",
+        "GITLAB_TOKEN": "${GITLAB_TOKEN}"
+      }
+    }
+  }
+}
+```
+
+Then set the environment variables in your shell or `.env` file:
+```bash
+export GITLAB_URL=https://your-gitlab.com
+export GITLAB_TOKEN=glpat-xxxxxxxxxxxx
+```
+
+### Option 3: Claude Desktop Configuration
+
+Edit your Claude Desktop config file:
+- **macOS**: `~/Library/Application Support/Claude/claude_desktop_config.json`
+- **Windows**: `%APPDATA%\Claude\claude_desktop_config.json`
+
+```json
+{
+  "mcpServers": {
+    "gitlab": {
+      "command": "uv",
+      "args": ["--directory", "/path/to/dps_mcp_local_gitlab", "run", "mcp-gitlab"],
+      "env": {
+        "GITLAB_URL": "https://your-gitlab.com",
+        "GITLAB_TOKEN": "glpat-xxxxxxxxxxxx"
+      }
+    }
+  }
+}
+```
+
+### Useful Claude Code Commands
+
+```bash
+claude mcp list          # List all configured MCP servers
+claude mcp get gitlab    # View gitlab MCP configuration details
+claude mcp remove gitlab # Remove the gitlab MCP server
+```
+
+## SSL Configuration
+
+For self-signed certificates, add the `GITLAB_SSL_VERIFY` environment variable:
+
+```bash
+claude mcp add gitlab \
+  --transport stdio \
+  --env GITLAB_URL=https://your-gitlab.com \
+  --env GITLAB_TOKEN=glpat-xxxxxxxxxxxx \
+  --env GITLAB_SSL_VERIFY=false \
+  -- uv --directory /path/to/dps_mcp_local_gitlab run mcp-gitlab
+```
+
+## Available Tools
+
+### Projects & Repositories (6 tools)
+| Tool | Description |
+|------|-------------|
+| `list_projects` | List accessible projects |
+| `get_project` | Get project details |
+| `list_branches` | List branches in a project |
+| `list_commits` | List commits |
+| `get_file` | Read a file from the repository |
+| `list_repository_tree` | List files and directories |
+
+### Issues (4 tools)
+| Tool | Description |
+|------|-------------|
+| `list_issues` | List project issues |
+| `get_issue` | Get issue details |
+| `create_issue` | Create a new issue |
+| `add_issue_comment` | Add a comment to an issue |
+
+### Merge Requests (4 tools)
+| Tool | Description |
+|------|-------------|
+| `list_merge_requests` | List merge requests |
+| `get_merge_request` | Get MR details |
+| `get_merge_request_changes` | View MR diff |
+| `add_mr_comment` | Add a comment to an MR |
+
+### Pipelines CI/CD (4 tools)
+| Tool | Description |
+|------|-------------|
+| `list_pipelines` | List CI/CD pipelines |
+| `get_pipeline` | Get pipeline details |
+| `list_pipeline_jobs` | List jobs in a pipeline |
+| `get_job_log` | View job logs |
+
+## Usage Examples
+
+Once configured, you can ask Claude to interact with your GitLab instance:
+
+- *"List all my GitLab projects"*
+- *"Show me the open issues in project my-team/my-project"*
+- *"Get the diff for merge request !42 in project my-team/my-project"*
+- *"Why did pipeline #123 fail in project my-team/my-project?"*
+- *"Create an issue titled 'Fix login bug' in project my-team/my-project"*
+
+## Troubleshooting
+
+### "GITLAB_URL environment variable is required"
+Make sure you've configured the environment variables correctly when adding the MCP server.
+
+### Authentication failed
+Verify that your Personal Access Token is valid and has the required scopes.
+
+### SSL certificate errors
+If using self-signed certificates, set `GITLAB_SSL_VERIFY=false` in your MCP configuration.
