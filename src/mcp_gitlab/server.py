@@ -17,12 +17,13 @@ mcp = FastMCP("gitlab")
 
 # Import and register tools from each module
 # Each module has a register_tools(mcp) function that adds its tools
-from mcp_gitlab.tools import projects, issues, merge_requests, pipelines
+from mcp_gitlab.tools import projects, issues, merge_requests, pipelines, groups
 
 projects.register_tools(mcp)
 issues.register_tools(mcp)
 merge_requests.register_tools(mcp)
 pipelines.register_tools(mcp)
+groups.register_tools(mcp)
 
 
 def main() -> None:
