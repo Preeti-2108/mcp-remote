@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 # - host="0.0.0.0" allows connections from any network interface
 # - host="127.0.0.1" restricts to localhost only (safer for local testing)
 import os
-HOST = os.getenv("MCP_HOST", "0.0.0.0")  # Default to all interfaces for remote access
+HOST = os.getenv("MCP_HOST", "0.0.0.0")  # Default to all interfaces for remote access.
 PORT = int(os.getenv("MCP_PORT", "8000"))  # Default port 8000
 
 mcp = FastMCP("gitlab", host=HOST, port=PORT)
