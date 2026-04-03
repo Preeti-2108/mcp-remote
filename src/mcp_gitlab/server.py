@@ -33,9 +33,20 @@ def main() -> None:
     CLI entrypoint for local development.
 
     This is called when running: uv run mcp-gitlab
-    FastMCP Cloud does NOT use this - it imports the mcp object directly.
+
+    For cloud deployment (AWS Lambda, etc.), the platform imports the mcp object
+    directly and should NOT call this function. We detect cloud environments and
+    skip running to avoid asyncio conflicts.
     """
     import os
+
+    # Detect cloud/Lambda environment - skip running if detected
+    # The platform will manage the mcp object lifecycle itself
+    if os.getenv("AWS_LAMBDA_FUNCTION_NAME") or os.getenv("LAMBDA_TASK_ROOT"):
+        logger.info("Cloud environment detected - skipping mcp.run(), platform will manage lifecycle")
+        return
+
+    # Local development mode - run the server
     HOST = os.getenv("MCP_HOST", "0.0.0.0")  # Default to all interfaces
     PORT = int(os.getenv("MCP_PORT", "8000"))  # Default port 8000
 
