@@ -30,23 +30,20 @@ groups.register_tools(mcp)
 
 def main() -> None:
     """
-    CLI entrypoint for local development.
+    CLI entrypoint - ONLY for standalone local development.
 
-    This is called when running: uv run mcp-gitlab
+    This should NEVER be called automatically. It's explicitly invoked when
+    running: uv run mcp-gitlab
 
-    For cloud deployment (AWS Lambda, etc.), the platform imports the mcp object
-    directly and should NOT call this function. We detect cloud environments and
-    skip running to avoid asyncio conflicts.
+    For cloud deployment, the platform MUST use the 'mcp' object directly,
+    not this main() function.
     """
     import os
 
-    # Detect cloud/Lambda environment - skip running if detected
-    # The platform will manage the mcp object lifecycle itself
-    if os.getenv("AWS_LAMBDA_FUNCTION_NAME") or os.getenv("LAMBDA_TASK_ROOT"):
-        logger.info("Cloud environment detected - skipping mcp.run(), platform will manage lifecycle")
-        return
+    # This function should only run when explicitly called by the CLI tool,
+    # not during module import or when fastmcp is managing the server
+    logger.info("Standalone mode - starting server with mcp.run()")
 
-    # Local development mode - run the server
     HOST = os.getenv("MCP_HOST", "0.0.0.0")  # Default to all interfaces
     PORT = int(os.getenv("MCP_PORT", "8000"))  # Default port 8000
 
@@ -54,5 +51,7 @@ def main() -> None:
     mcp.run(transport="streamable-http", host=HOST, port=PORT)
 
 
-# Note: FastMCP Cloud imports the mcp object and manages it directly
-# For local development, use: uv run mcp-gitlab (calls main() above)
+# IMPORTANT: For FastMCP Cloud / remote deployment:
+# - The cloud platform imports this module and uses the 'mcp' object directly
+# - It should NOT call main() - that's only for standalone local development
+# - Use: fastmcp run src/mcp_gitlab/server.py (imports mcp, doesn't call main)
