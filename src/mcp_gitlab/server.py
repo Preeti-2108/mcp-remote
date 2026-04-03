@@ -33,10 +33,16 @@ pipelines.register_tools(mcp)
 groups.register_tools(mcp)
 
 
-# FastMCP Cloud will call mcp.run() automatically when using: fastmcp run server.py
-# For manual execution, use the main() function below
+def main() -> None:
+    """
+    CLI entrypoint for local development.
 
-if __name__ == "__main__":
-    # When running manually (not via FastMCP Cloud), start with streamable HTTP
+    This is called when running: uv run mcp-gitlab
+    FastMCP Cloud does NOT use this - it imports the mcp object directly.
+    """
     logger.info(f"Starting GitLab MCP server (Streamable HTTP) on {HOST}:{PORT}")
     mcp.run(transport="streamable-http")
+
+
+# Note: FastMCP Cloud imports the mcp object and manages it directly
+# For local development, use: uv run mcp-gitlab (calls main() above)
