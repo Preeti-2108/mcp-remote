@@ -41,7 +41,7 @@ def main() -> None:
     import os
 
     # This function should only run when explicitly called by the CLI tool,
-    # not during module import or when fastmcp is managing the server
+    # not during module import or when fastmcp is managing the server.
     logger.info("Standalone mode - starting server with mcp.run()")
 
     HOST = os.getenv("MCP_HOST", "0.0.0.0")  # Default to all interfaces
