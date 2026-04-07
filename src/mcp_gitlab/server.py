@@ -49,3 +49,4 @@ def main() -> None:
 
     logger.info(f"Starting GitLab MCP server (Streamable HTTP) on {HOST}:{PORT}")
     mcp.run(transport="streamable-http", host=HOST, port=PORT)
+    
