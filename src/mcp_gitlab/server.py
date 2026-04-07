@@ -49,9 +49,3 @@ def main() -> None:
 
     logger.info(f"Starting GitLab MCP server (Streamable HTTP) on {HOST}:{PORT}")
     mcp.run(transport="streamable-http", host=HOST, port=PORT)
-
-
-# IMPORTANT: For FastMCP Cloud / remote deployment:
-# - The cloud platform imports this module and uses the 'mcp' object directly
-# - It should NOT call main() - that's only for standalone local development
-# - Use: fastmcp run src/mcp_gitlab/server.py (imports mcp, doesn't call main)
