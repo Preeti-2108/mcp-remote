@@ -41,7 +41,7 @@ def main() -> None:
 
     # ✅ Safe for local only
     mcp.run(
-        transport="streamable-http",
+        transport="http",
         host=HOST,
         port=PORT,
     )
